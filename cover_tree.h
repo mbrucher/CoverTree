@@ -8,9 +8,15 @@
 /**
  * Cover tree class, templated with the inner type
  */
-template<class DataType>
+template<class DataType, class Point, class Distance>
 class CoverTree
 {
+  Distance distance;
+public:
+  CoverTree(const Distance& distance)
+    :distance(distance)
+  {
+  }
 };
 
 #endif
