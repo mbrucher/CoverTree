@@ -1,0 +1,11 @@
+Cover Tree
+==========
+
+Installation
+------------
+
+Copy cover_tree.h in your application hierarchy, add Boost in your include path and you're good to go.
+
+License
+-------
+The code is licensed under the LGPL 3 license.
