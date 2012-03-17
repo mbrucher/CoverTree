@@ -13,8 +13,10 @@
 #include "cover_tree.h"
 
 const long POINTSIZE = 2;
+typedef std::vector<float> Point;
+typedef std::vector<std::vector<float> > PointContainer;
 
-float euclidian(const std::vector<float>& p1, const std::vector<float>& p2)
+float euclidian(const Point& p1, const Point& p2)
 {
   float dist = 0;
   for(unsigned long i = 0; i < p1.size(); ++i)
@@ -24,9 +26,9 @@ float euclidian(const std::vector<float>& p1, const std::vector<float>& p2)
   return dist;
 }
 
-std::vector<std::vector<float> > generate(long size)
+PointContainer generate(long size)
 {
-  std::vector<std::vector<float> > data;
+  PointContainer data;
 
   boost::mt19937 engine(static_cast<long unsigned int>(clock()));
   boost::normal_distribution<double> generator;
@@ -34,7 +36,7 @@ std::vector<std::vector<float> > generate(long size)
 
   for(long i = 0; i < size; ++i)
   {
-    std::vector<float> point;
+    Point point;
     for(long j = 0; j < POINTSIZE; ++j)
     {
       point.push_back(binded());
@@ -48,6 +50,13 @@ std::vector<std::vector<float> > generate(long size)
 int main(int argc, char** argv)
 {
   CoverTree<float, std::vector<float>, float (*const)(const std::vector<float>&, const std::vector<float>&)> tree(&euclidian);
+
+  PointContainer data = generate(10000);
+
+  for(PointContainer::const_iterator it = data.begin(); it != data.end(); ++it)
+  {
+    tree.insert(*it);
+  }
 
   return EXIT_SUCCESS;
 }
