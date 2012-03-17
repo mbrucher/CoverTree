@@ -16,12 +16,19 @@
 template<class DataType, class Point, class Distance>
 class CoverTree
 {
+  static const long max_level = 10;
+
   Distance distance;
 
   struct Node
   {
     Point data;
     std::map<long, boost::ptr_list<Node> > children;
+
+    bool insert(const Point& data, long level)
+    {
+      return false;
+    }
   };
 
   boost::scoped_ptr<Node> root;
@@ -41,6 +48,10 @@ public:
     }
     else
     {
+      if(!root->insert(data, max_level))
+      {
+        throw std::runtime_error("No parent found");
+      };
     }
   }
 };
