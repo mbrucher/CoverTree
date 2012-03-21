@@ -6,6 +6,7 @@
 #define COVERTREE_H
 
 #include <map>
+#include <set>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
@@ -25,13 +26,20 @@ class CoverTree
     Point data;
     std::map<long, boost::ptr_list<Node> > children;
 
-    bool insert(const Point& data, long level)
+    void add_child(const Point& new_data, long level)
     {
-      return false;
+      std::unique_ptr<Node> node(new Node);
+      node->data = new_data;
+      children[level].push_back(node);
     }
   };
 
   boost::scoped_ptr<Node> root;
+
+  bool insert(const Point& data, const std::set<Node*>& node_set, long level)
+  {
+    return false;
+  }
 
 public:
   CoverTree(const Distance& distance)
@@ -48,7 +56,9 @@ public:
     }
     else
     {
-      if(!root->insert(data, max_level))
+      std::set<Node*> node_set;
+      node_set.insert(root.get());
+      if(!insert(data, node_set, max_level))
       {
         throw std::runtime_error("No parent found");
       };

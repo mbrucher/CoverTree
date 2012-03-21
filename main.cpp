@@ -23,7 +23,7 @@ float euclidian(const Point& p1, const Point& p2)
   {
     dist += (p1[i] - p2[i]) * (p1[i] - p2[i]);
   }
-  return dist;
+  return std::sqrt(dist);
 }
 
 PointContainer generate(long size)
