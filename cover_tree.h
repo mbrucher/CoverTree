@@ -48,7 +48,7 @@ class CoverTree
         }
         stream << "}" << std::endl;
       }
-        stream << "}" << std::endl;
+      stream << "}" << std::endl;
     }
   };
 
