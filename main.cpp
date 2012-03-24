@@ -47,6 +47,16 @@ PointContainer generate(long size)
   return data;
 }
 
+std::ostream& operator<<(std::ostream& stream, const Point& data)
+{
+  for(Point::const_iterator it = data.begin(); it != data.end(); ++it)
+  {
+    stream << *it << "\t";
+  }
+  stream << std::endl;
+  return stream;
+}
+
 int main(int argc, char** argv)
 {
   CoverTree<float, std::vector<float>, float (*const)(const std::vector<float>&, const std::vector<float>&)> tree(&euclidian);
@@ -57,6 +67,8 @@ int main(int argc, char** argv)
   {
     tree.insert(*it);
   }
+
+  tree.dump(std::cout);
 
   return EXIT_SUCCESS;
 }
