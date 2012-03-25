@@ -2,7 +2,7 @@
  * \file main.cpp
  */
 
-#include <iostream>
+#include <fstream>
 #include <vector>
 
 #include <boost/random/mersenne_twister.hpp>
@@ -13,6 +13,7 @@
 #include "cover_tree.h"
 
 const long POINTSIZE = 2;
+const long VECTORLENGTH = 10000;
 typedef std::vector<float> Point;
 typedef std::vector<std::vector<float> > PointContainer;
 
@@ -61,14 +62,16 @@ int main(int argc, char** argv)
 {
   CoverTree<float, std::vector<float>, float (*const)(const std::vector<float>&, const std::vector<float>&)> tree(&euclidian);
 
-  PointContainer data = generate(10000);
+  PointContainer data = generate(VECTORLENGTH);
 
   for(PointContainer::const_iterator it = data.begin(); it != data.end(); ++it)
   {
     tree.insert(*it);
   }
 
-  tree.dump(std::cout);
+  std::ofstream stream("dump.txt");
+
+  tree.dump(stream);
 
   return EXIT_SUCCESS;
 }
