@@ -108,7 +108,6 @@ class CoverTree
       }
     }
     (*node_set.begin())->add_child(data, level);
-    std::cout << distance(data, (*node_set.begin())->data) << "\t" << level << std::endl;
     return true;
   }
 
