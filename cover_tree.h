@@ -71,16 +71,17 @@ class CoverTree
 
   void populate_set_from_node(const Point& data, Node* node, std::set<Node*>& node_set, long level) const
   {
-    node_set.insert(node);
+    DataType max_dist = std::pow(static_cast<DataType>(2), level);
+    if(distance(data, node->data) < max_dist)
+      node_set.insert(node);
     Node::ChildrenContainer::iterator it = node->children.find(level);
     if(it == node->children.end())
     {
       return;
     }
-    DataType max_dist = std::pow(static_cast<DataType>(2), level);
     for(Node::ChildrenLevelContainer::iterator it_level = it->second.begin(); it_level != it->second.end(); ++it_level)
     {
-      if(distance(data, node->data) < max_dist)
+      if(distance(data, it_level->data) < max_dist)
       {
         node_set.insert(&*it_level);
       }
@@ -104,6 +105,7 @@ class CoverTree
       return true;
     }
     (*node_set.begin())->add_child(data, level);
+    std::cout << distance(data, (*node_set.begin())->data) << "\t" << level << std::endl;
     return true;
   }
 
