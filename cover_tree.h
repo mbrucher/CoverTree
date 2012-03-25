@@ -18,6 +18,7 @@
 template<class DataType, class Point, class Distance>
 class CoverTree
 {
+  static const long default_max_level = 0;
   long max_level;
 
   Distance distance;
@@ -31,7 +32,7 @@ class CoverTree
 
     void add_child(const Point& new_data, long level)
     {
-      std::unique_ptr<Node> node(new Node);
+      std::auto_ptr<Node> node(new Node);
       node->data = new_data;
       children[level].push_back(node);
     }
@@ -68,6 +69,24 @@ class CoverTree
     return dist;
   }
 
+  void populate_set_from_node(const Point& data, Node* node, std::set<Node*>& node_set, long level) const
+  {
+    node_set.insert(node);
+    Node::ChildrenContainer::iterator it = node->children.find(level);
+    if(it == node->children.end())
+    {
+      return;
+    }
+    DataType max_dist = std::pow(static_cast<DataType>(2), level);
+    for(Node::ChildrenLevelContainer::iterator it_level = it->second.begin(); it_level != it->second.end(); ++it_level)
+    {
+      if(distance(data, node->data) < max_dist)
+      {
+        node_set.insert(&*it_level);
+      }
+    }
+  }
+
   bool insert(const Point& data, const std::set<Node*>& node_set, long level)
   {
     DataType dist = find_min_dist(data, node_set);
@@ -75,12 +94,22 @@ class CoverTree
     {
       return false;
     }
+    std::set<Node*> new_node_set;
+    for(std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
+    {
+      populate_set_from_node(data, *it, new_node_set, level);
+    }
+    if(insert(data, new_node_set, level - 1))
+    {
+      return true;
+    }
+    (*node_set.begin())->add_child(data, level);
     return true;
   }
 
 public:
   CoverTree(const Distance& distance)
-    :max_level(10), distance(distance)
+    :max_level(default_max_level), distance(distance)
   {
   }
 
