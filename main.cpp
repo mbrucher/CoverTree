@@ -95,7 +95,11 @@ int main(int argc, char** argv)
   Point zero(2, 0.f);
   time = boost::posix_time::microsec_clock::local_time();
   PointContainer result = knn(data, zero, 10);
-  std::cout << "Out time " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
+  std::cout << "Out time (linear) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
+
+  time = boost::posix_time::microsec_clock::local_time();
+  PointContainer result2 = tree.knn(zero, 10);
+  std::cout << "Out time (cover_tree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
 
   return EXIT_SUCCESS;
 }

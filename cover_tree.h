@@ -20,6 +20,7 @@ class CoverTree
 {
   static const long default_max_level = 0;
   long max_level;
+  long min_level;
 
   Distance distance;
 
@@ -108,12 +109,13 @@ class CoverTree
       }
     }
     (*node_set.begin())->add_child(data, level);
+    min_level = std::min(min_level, level);
     return true;
   }
 
 public:
   CoverTree(const Distance& distance)
-    :max_level(default_max_level), distance(distance)
+    :max_level(default_max_level), min_level(default_max_level), distance(distance)
   {
   }
 
@@ -134,6 +136,21 @@ public:
         insert(data);
       };
     }
+  }
+
+  std::vector<Point> knn(const Point& data, int k) const
+  {
+    std::map<DataType, const Node*> nearest_nodes;
+    nearest_nodes[distance(data, root->data)] = root.get();
+
+    std::vector<Point> points;
+    std::map<DataType, const Node*>::const_iterator it = nearest_nodes.begin();
+    for(int i = 0; i < k && it != nearest_nodes.end(); ++i)
+    {
+      points.push_back(it->second->data);
+      ++it;
+    }
+    return points;
   }
 
   void dump(std::ostream& stream) const
