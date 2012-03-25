@@ -29,8 +29,11 @@ if __name__ == "__main__":
     a = np.array(data[key])
     print a[:, 0]
     if key == 10000:
-      key = 5
-    plt.scatter(a[:, 0], a[:, 1], marker = "o", s = (15 * 2.**key)**2, alpha=.5)
+      key = max(keys[:-1]) + 1
+    plt.scatter(a[:, 0], a[:, 1], marker = "o", s = (16 * 2.**key)**2, alpha=.5)
     plt.hold(True)
 
+  true_max = 2**max(keys[:-1])
+  plt.xlim([-true_max, true_max])
+  plt.ylim([-true_max, true_max])
   plt.show()
