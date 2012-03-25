@@ -95,14 +95,17 @@ class CoverTree
     {
       return false;
     }
-    std::set<Node*> new_node_set;
-    for(std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
+    if(dist <= std::pow(static_cast<DataType>(2), level - 1))
     {
-      populate_set_from_node(data, *it, new_node_set, level);
-    }
-    if(insert(data, new_node_set, level - 1))
-    {
-      return true;
+      std::set<Node*> new_node_set;
+      for(std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
+      {
+        populate_set_from_node(data, *it, new_node_set, level - 1);
+      }
+      if(insert(data, new_node_set, level - 1))
+      {
+        return true;
+      }
     }
     (*node_set.begin())->add_child(data, level);
     std::cout << distance(data, (*node_set.begin())->data) << "\t" << level << std::endl;
