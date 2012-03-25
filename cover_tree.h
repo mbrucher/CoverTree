@@ -18,7 +18,7 @@
 template<class DataType, class Point, class Distance>
 class CoverTree
 {
-  static const long max_level = 10;
+  long max_level;
 
   Distance distance;
 
@@ -54,14 +54,33 @@ class CoverTree
 
   boost::scoped_ptr<Node> root;
 
+  DataType find_min_dist(const Point& data, const std::set<Node*>& node_set) const
+  {
+    DataType dist = std::numeric_limits<DataType>::max();
+    for(std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
+    {
+      DataType current_dist = distance(data, (*it)->data);
+      if(current_dist < dist)
+      {
+        dist = current_dist;
+      }
+    }
+    return dist;
+  }
+
   bool insert(const Point& data, const std::set<Node*>& node_set, long level)
   {
+    DataType dist = find_min_dist(data, node_set);
+    if(dist > std::pow(static_cast<DataType>(2), level))
+    {
+      return false;
+    }
     return true;
   }
 
 public:
   CoverTree(const Distance& distance)
-    :distance(distance)
+    :max_level(10), distance(distance)
   {
   }
 
@@ -78,7 +97,8 @@ public:
       node_set.insert(root.get());
       if(!insert(data, node_set, max_level))
       {
-        throw std::runtime_error("No parent found");
+        ++max_level;
+        insert(data);
       };
     }
   }
