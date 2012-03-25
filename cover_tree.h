@@ -80,11 +80,28 @@ class CoverTree
     {
       return;
     }
-    for(Node::ChildrenLevelContainer::iterator it_level = it->second.begin(); it_level != it->second.end(); ++it_level)
+    populate_set_from_list(data, node_set, it->second, max_dist);
+  }
+
+  void populate_set_from_list(const Point& data, std::set<Node*>& node_set, typename Node::ChildrenLevelContainer& level_container, DataType max_dist) const
+  {
+    for(Node::ChildrenLevelContainer::iterator it_level = level_container.begin(); it_level != level_container.end(); ++it_level)
     {
       if(distance(data, it_level->data) < max_dist)
       {
         node_set.insert(&*it_level);
+      }
+    }
+  }
+
+  void populate_map_from_list(const Point& data, std::map<DataType, const Node*>& node_map, const typename Node::ChildrenLevelContainer& level_container, DataType max_dist) const
+  {
+    for(Node::ChildrenLevelContainer::const_iterator it_level = level_container.begin(); it_level != level_container.end(); ++it_level)
+    {
+      DataType dist = distance(data, it_level->data);
+      if(dist < max_dist)
+      {
+        node_map[dist] = &*it_level;
       }
     }
   }
@@ -142,6 +159,23 @@ public:
   {
     std::map<DataType, const Node*> nearest_nodes;
     nearest_nodes[distance(data, root->data)] = root.get();
+
+    for(int i = max_level; i >= min_level; --i)
+    {
+      std::map<DataType, const Node*> new_nearest_nodes;
+      int j = 0;
+      for(std::map<DataType, const Node*>::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end() && j < k; ++it)
+      {
+        new_nearest_nodes.insert(*it);
+        Node::ChildrenContainer::const_iterator it_level = it->second->children.find(i);
+        if(it_level != it->second->children.end())
+        {
+          populate_map_from_list(data, new_nearest_nodes, it_level->second, it->first + std::pow(static_cast<DataType>(2), i));
+        }
+        ++j;
+      }
+      nearest_nodes.swap(new_nearest_nodes);
+    }
 
     std::vector<Point> points;
     std::map<DataType, const Node*>::const_iterator it = nearest_nodes.begin();

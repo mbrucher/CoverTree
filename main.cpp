@@ -14,7 +14,7 @@
 #include "cover_tree.h"
 
 const long POINTSIZE = 2;
-const long VECTORLENGTH = 1000;
+const long VECTORLENGTH = 10000;
 typedef std::vector<float> Point;
 typedef std::vector<std::vector<float> > PointContainer;
 
@@ -62,6 +62,7 @@ PointContainer knn(const PointContainer& container, const Point& data, int k)
   for(int i = 0; i < k; ++i)
   {
     result.push_back(it->second);
+    ++it;
   }
   return result;
 }
@@ -89,8 +90,8 @@ int main(int argc, char** argv)
   }
   std::cout << "Build time " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
 
-  /*  std::ofstream stream("dump.txt");
-  tree.dump(stream);*/
+  std::ofstream stream("dump.txt");
+  tree.dump(stream);
 
   Point zero(2, 0.f);
   time = boost::posix_time::microsec_clock::local_time();
@@ -101,5 +102,14 @@ int main(int argc, char** argv)
   PointContainer result2 = tree.knn(zero, 10);
   std::cout << "Out time (cover_tree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
 
+  bool boolean = true;
+  for(int i = 0; i < std::min(result.size(), result2.size()); ++i)
+  {
+    for(int j = 0; j < POINTSIZE; ++j)
+    {
+      boolean = boolean && (result[i][j] == result2[i][j]);
+    }
+  }
+  std::cout << "Result " << (boolean && (result.size() == result2.size())) << std::endl;
   return EXIT_SUCCESS;
 }
