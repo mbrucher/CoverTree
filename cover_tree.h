@@ -109,16 +109,16 @@ class CoverTree
 
   bool try_insertion(const Point& data, const std::set<Node*>& node_set, int level)
   {
-      std::set<Node*> new_node_set;
-      for(typename std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
-      {
-        populate_set_from_node(data, *it, new_node_set, level);
-      }
-      if(insert(data, new_node_set, level - 1))
-      {
-        return true;
-      }
-      return false;
+    std::set<Node*> new_node_set;
+    for(typename std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
+    {
+      populate_set_from_node(data, *it, new_node_set, level);
+    }
+    if(insert(data, new_node_set, level - 1))
+    {
+      return true;
+    }
+    return false;
   }
 
   bool insert(const Point& data, const std::set<Node*>& node_set, int level)
@@ -138,6 +138,32 @@ class CoverTree
     (*node_set.begin())->add_child(data, level);
     min_level = std::min(min_level, level);
     return true;
+  }
+
+  void level_traversal(const Point& data, NearestNodesStructure& nearest_nodes, int level, std::size_t k) const
+  {
+    NearestNodesStructure new_nearest_nodes;
+    std::size_t j = 0;
+    for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end() && j < k; ++it)
+    {
+      new_nearest_nodes.push_back(*it);
+      ++j;
+    }
+    j = 0;
+    DataType max_dist = new_nearest_nodes.rbegin()->first;
+    new_nearest_nodes.clear();
+    for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end(); ++it)
+    {
+      if(distance(data, it->second->data) < max_dist + std::pow(static_cast<DataType>(2), level))
+        new_nearest_nodes.push_back(*it);
+      typename Node::ChildrenContainer::const_iterator it_level = it->second->children.find(level);
+      if(it_level != it->second->children.end())
+      {
+        populate_node_structure_from_list(data, new_nearest_nodes, it_level->second, max_dist + std::pow(static_cast<DataType>(2), level));
+      }
+      ++j;
+    }
+    nearest_nodes.swap(new_nearest_nodes);
   }
 
 public:
@@ -172,28 +198,7 @@ public:
 
     for(int i = max_level; i >= min_level; --i)
     {
-      NearestNodesStructure new_nearest_nodes;
-      std::size_t j = 0;
-      for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end() && j < k; ++it)
-      {
-        new_nearest_nodes.push_back(*it);
-        ++j;
-      }
-      j = 0;
-      DataType max_dist = new_nearest_nodes.rbegin()->first;
-      new_nearest_nodes.clear();
-      for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end(); ++it)
-      {
-        if(distance(data, it->second->data) < max_dist + std::pow(static_cast<DataType>(2), i))
-          new_nearest_nodes.push_back(*it);
-        typename Node::ChildrenContainer::const_iterator it_level = it->second->children.find(i);
-        if(it_level != it->second->children.end())
-        {
-          populate_node_structure_from_list(data, new_nearest_nodes, it_level->second, max_dist + std::pow(static_cast<DataType>(2), i));
-        }
-        ++j;
-      }
-      nearest_nodes.swap(new_nearest_nodes);
+      level_traversal(data, nearest_nodes, i, k);
       long partial_sort_position = std::min(k, nearest_nodes.size());
       std::partial_sort(nearest_nodes.begin(), nearest_nodes.begin() + partial_sort_position, nearest_nodes.end());
     }
