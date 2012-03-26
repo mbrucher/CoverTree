@@ -6,7 +6,7 @@
 #define COVERTREE_H
 
 #include <iosfwd>
-#include <map>
+#include <boost/unordered_map.hpp>
 #include <set>
 
 #include <boost/scoped_ptr.hpp>
@@ -28,7 +28,7 @@ class CoverTree
   {
     Point data;
     typedef boost::ptr_list<Node> ChildrenLevelContainer;
-    typedef std::map<int, ChildrenLevelContainer> ChildrenContainer;
+    typedef boost::unordered_map<int, ChildrenLevelContainer> ChildrenContainer;
     ChildrenContainer children;
 
     void add_child(const Point& new_data, long level)
@@ -54,6 +54,7 @@ class CoverTree
     }
   };
 
+  typedef std::vector<std::pair<DataType, const Node*> > NearestNodesStructure;
   boost::scoped_ptr<Node> root;
 
   DataType find_min_dist(const Point& data, const std::set<Node*>& node_set) const
@@ -93,8 +94,6 @@ class CoverTree
       }
     }
   }
-
-  typedef std::vector<std::pair<DataType, const Node*> > NearestNodesStructure;
 
   void populate_node_structure_from_list(const Point& data, NearestNodesStructure& node_map, const typename Node::ChildrenLevelContainer& level_container, DataType max_dist) const
   {
