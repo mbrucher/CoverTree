@@ -14,7 +14,8 @@
 #include "cover_tree.h"
 
 const long POINTSIZE = 2;
-const long VECTORLENGTH = 10000;
+const long VECTORLENGTH = 100000;
+const long KNNSIZE = 10;
 typedef std::vector<float> Point;
 typedef std::vector<std::vector<float> > PointContainer;
 
@@ -95,11 +96,11 @@ int main(int argc, char** argv)
 
   Point zero(2, 0.f);
   time = boost::posix_time::microsec_clock::local_time();
-  PointContainer result = knn(data, zero, 10);
+  PointContainer result = knn(data, zero, KNNSIZE);
   std::cout << "Out time (linear) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
 
   time = boost::posix_time::microsec_clock::local_time();
-  PointContainer result2 = tree.knn(zero, 10);
+  PointContainer result2 = tree.knn(zero, KNNSIZE);
   std::cout << "Out time (cover_tree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
 
   bool boolean = true;
@@ -109,6 +110,7 @@ int main(int argc, char** argv)
     {
       boolean = boolean && (result[i][j] == result2[i][j]);
     }
+    std::cout << i << std::endl << result[i] << result2[i];
   }
   std::cout << "Result " << (boolean && (result.size() == result2.size())) << std::endl;
   return EXIT_SUCCESS;

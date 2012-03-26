@@ -5,21 +5,25 @@ def parse_input(lines):
   data = defaultdict(list)
   level = 0
   current_level = 10000
+  parent = []
   for line in lines:
     if line == "{":
       level = level + 1
     if line == "}":
       level = level - 1
+      parent = parent[:-1]
     if line.startswith("Level"):
       current_level = int(line.split()[1][:-1])
     if line.startswith("Point"):
-      data[current_level].append([float(el) for el in line.split()[1:]])
+      el = [float(el) for el in line.split()[1:]]
+      data[current_level].append(el)
+      parent.append(el)
   return data
 
 if __name__ == "__main__":
   from matplotlib import pyplot as plt
   import numpy as np
-  
+
   f = open("dump.txt")
   data = parse_input(f)
   keys = data.keys()
