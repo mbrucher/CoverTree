@@ -107,6 +107,20 @@ class CoverTree
     }
   }
 
+  bool try_insertion(const Point& data, const std::set<Node*>& node_set, int level)
+  {
+      std::set<Node*> new_node_set;
+      for(typename std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
+      {
+        populate_set_from_node(data, *it, new_node_set, level);
+      }
+      if(insert(data, new_node_set, level - 1))
+      {
+        return true;
+      }
+      return false;
+  }
+
   bool insert(const Point& data, const std::set<Node*>& node_set, int level)
   {
     DataType dist = find_min_dist(data, node_set);
@@ -116,12 +130,7 @@ class CoverTree
     }
     if(dist <= std::pow(static_cast<DataType>(2), level - 1))
     {
-      std::set<Node*> new_node_set;
-      for(typename std::set<Node*>::const_iterator it = node_set.begin(); it != node_set.end(); ++it)
-      {
-        populate_set_from_node(data, *it, new_node_set, level);
-      }
-      if(insert(data, new_node_set, level - 1))
+      if(try_insertion(data, node_set, level))
       {
         return true;
       }
@@ -164,7 +173,7 @@ public:
     for(int i = max_level; i >= min_level; --i)
     {
       NearestNodesStructure new_nearest_nodes;
-      int j = 0;
+      std::size_t j = 0;
       for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end() && j < k; ++it)
       {
         new_nearest_nodes.push_back(*it);
@@ -191,7 +200,7 @@ public:
 
     std::vector<Point> points;
     typename NearestNodesStructure::const_iterator it = nearest_nodes.begin();
-    for(int i = 0; i < k && it != nearest_nodes.end(); ++i)
+    for(std::size_t i = 0; i < k && it != nearest_nodes.end(); ++i)
     {
       points.push_back(it->second->data);
       ++it;
