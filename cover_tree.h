@@ -140,7 +140,7 @@ class CoverTree
     return true;
   }
 
-  void level_traversal(const Point& data, NearestNodesStructure& nearest_nodes, int level, std::size_t k) const
+  DataType find_k_distance(NearestNodesStructure& nearest_nodes, std::size_t k) const
   {
     NearestNodesStructure new_nearest_nodes;
     std::size_t j = 0;
@@ -150,7 +150,13 @@ class CoverTree
       ++j;
     }
     j = 0;
-    DataType max_dist = new_nearest_nodes.rbegin()->first;
+    return new_nearest_nodes.rbegin()->first;
+  }
+
+  void level_traversal(const Point& data, NearestNodesStructure& nearest_nodes, int level, std::size_t k) const
+  {
+    NearestNodesStructure new_nearest_nodes;
+    DataType max_dist = find_k_distance(nearest_nodes, k);
     new_nearest_nodes.clear();
     for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end(); ++it)
     {
