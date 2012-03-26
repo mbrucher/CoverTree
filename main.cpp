@@ -14,7 +14,7 @@
 #include "cover_tree.h"
 
 const long POINTSIZE = 2;
-const long VECTORLENGTH = 100000;
+const long VECTORLENGTH = 10000;
 const long KNNSIZE = 10;
 typedef std::vector<float> Point;
 typedef std::vector<std::vector<float> > PointContainer;

@@ -94,14 +94,16 @@ class CoverTree
     }
   }
 
-  void populate_map_from_list(const Point& data, std::map<DataType, const Node*>& node_map, const typename Node::ChildrenLevelContainer& level_container, DataType max_dist) const
+  typedef std::vector<std::pair<DataType, const Node*> > NearestNodesStructure;
+
+  void populate_node_structure_from_list(const Point& data, NearestNodesStructure& node_map, const typename Node::ChildrenLevelContainer& level_container, DataType max_dist) const
   {
     for(typename Node::ChildrenLevelContainer::const_iterator it_level = level_container.begin(); it_level != level_container.end(); ++it_level)
     {
       DataType dist = distance(data, it_level->data);
       if(dist < max_dist)
       {
-        node_map[dist] = &*it_level;
+        node_map.push_back(std::make_pair(dist, &*it_level));
       }
     }
   }
@@ -155,38 +157,41 @@ public:
     }
   }
 
-  std::vector<Point> knn(const Point& data, int k) const
+  std::vector<Point> knn(const Point& data, std::size_t k) const
   {
-    std::map<DataType, const Node*> nearest_nodes;
-    nearest_nodes[distance(data, root->data)] = root.get();
+    NearestNodesStructure nearest_nodes;
+    nearest_nodes.push_back(std::make_pair(distance(data, root->data), root.get()));
 
     for(int i = max_level; i >= min_level; --i)
     {
-      std::map<DataType, const Node*> new_nearest_nodes;
+      NearestNodesStructure new_nearest_nodes;
       int j = 0;
-      for(typename std::map<DataType, const Node*>::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end(); ++it)
+      for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end() && j < k; ++it)
       {
-        new_nearest_nodes.insert(*it);
+        new_nearest_nodes.push_back(*it);
         ++j;
       }
       j = 0;
       DataType max_dist = new_nearest_nodes.rbegin()->first;
-      for(typename std::map<DataType, const Node*>::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end(); ++it)
+      new_nearest_nodes.clear();
+      for(typename NearestNodesStructure::const_iterator it = nearest_nodes.begin(); it != nearest_nodes.end(); ++it)
       {
         if(distance(data, it->second->data) < max_dist + std::pow(static_cast<DataType>(2), i))
-          new_nearest_nodes.insert(*it);
+          new_nearest_nodes.push_back(*it);
         typename Node::ChildrenContainer::const_iterator it_level = it->second->children.find(i);
         if(it_level != it->second->children.end())
         {
-          populate_map_from_list(data, new_nearest_nodes, it_level->second, max_dist + std::pow(static_cast<DataType>(2), i));
+          populate_node_structure_from_list(data, new_nearest_nodes, it_level->second, max_dist + std::pow(static_cast<DataType>(2), i));
         }
         ++j;
       }
       nearest_nodes.swap(new_nearest_nodes);
+      long partial_sort_position = std::min(k, nearest_nodes.size());
+      std::partial_sort(nearest_nodes.begin(), nearest_nodes.begin() + partial_sort_position, nearest_nodes.end());
     }
 
     std::vector<Point> points;
-    typename std::map<DataType, const Node*>::const_iterator it = nearest_nodes.begin();
+    typename NearestNodesStructure::const_iterator it = nearest_nodes.begin();
     for(int i = 0; i < k && it != nearest_nodes.end(); ++i)
     {
       points.push_back(it->second->data);
