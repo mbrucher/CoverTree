@@ -167,7 +167,6 @@ class CoverTree
       {
         populate_node_structure_from_list(data, new_nearest_nodes, it_level->second, max_dist + std::pow(static_cast<DataType>(2), level));
       }
-      ++j;
     }
     nearest_nodes.swap(new_nearest_nodes);
   }
