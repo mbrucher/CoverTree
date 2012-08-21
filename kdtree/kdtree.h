@@ -100,7 +100,14 @@ namespace Search
         MyNode* current_node = nodes.begin()->second;
         nodes.erase(nodes.begin());
 
-        current_node->add_children(point, distance, points);
+        if(current_node->children.empty())
+        {
+          current_node->add_nodes(point, distance, nodes);
+        }
+        else
+        {
+          current_node->add_children(point, distance, points);
+        }
       }
 
       for (auto it = points.begin(); it != points.end() && result.size() < k; ++it)

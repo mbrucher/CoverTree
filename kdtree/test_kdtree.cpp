@@ -52,14 +52,14 @@ PointContainer generate(long size)
 
 PointContainer knn(const PointContainer& container, const Point& data, int k)
 {
-  std::map<float, Point> point_map;
+  std::multimap<float, Point> point_map;
   for(PointContainer::const_iterator it = container.begin(); it != container.end(); ++it)
   {
-    point_map[euclidian(data, *it)] = *it;
+    point_map.insert(std::make_pair(euclidian(data, *it), *it));
   }
 
   PointContainer result;
-  std::map<float, Point>::const_iterator it = point_map.begin();
+  std::multimap<float, Point>::const_iterator it = point_map.begin();
   for(int i = 0; i < k; ++i)
   {
     result.push_back(it->second);
