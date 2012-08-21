@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoverTree", "CoverTree.vcxproj", "{6FD90F21-4401-47DB-9E8F-F8A2C518605E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoverTree", "covertree\CoverTree.vcxproj", "{6FD90F21-4401-47DB-9E8F-F8A2C518605E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kdtree", "kdtree\kdtree.vcxproj", "{B3599764-7DBC-4EA9-AF14-D4ADA49161E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +15,10 @@ Global
 		{6FD90F21-4401-47DB-9E8F-F8A2C518605E}.Debug|Win32.Build.0 = Debug|Win32
 		{6FD90F21-4401-47DB-9E8F-F8A2C518605E}.Release|Win32.ActiveCfg = Release|Win32
 		{6FD90F21-4401-47DB-9E8F-F8A2C518605E}.Release|Win32.Build.0 = Release|Win32
+		{B3599764-7DBC-4EA9-AF14-D4ADA49161E0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B3599764-7DBC-4EA9-AF14-D4ADA49161E0}.Debug|Win32.Build.0 = Debug|Win32
+		{B3599764-7DBC-4EA9-AF14-D4ADA49161E0}.Release|Win32.ActiveCfg = Release|Win32
+		{B3599764-7DBC-4EA9-AF14-D4ADA49161E0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
