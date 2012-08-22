@@ -16,6 +16,8 @@ namespace Search
   {
     long dimension;
     ContainerType middle;
+    ContainerType minpoint;
+    ContainerType maxpoint;
 
     boost::scoped_ptr<Node<ContainerType> > left;
     boost::scoped_ptr<Node<ContainerType> > right;
@@ -60,6 +62,11 @@ namespace Search
 
     boost::scoped_ptr<MyNode> root;
 
+    bool test_distance_too_great(MyNode* node, const ContainerType& point, double max_dist) const
+    {
+      return false;
+    }
+
   public:
     KDTree(const Distance& distance) :
         distance(distance)
@@ -78,11 +85,15 @@ namespace Search
       {
         root.reset(new MyNode);
         root->middle = (minpoint + maxpoint) / 2;
+        root->minpoint = minpoint;
+        root->maxpoint = maxpoint;
       }
       root->add_point(point);
     }
 
-    std::vector<ContainerType> knn(const ContainerType& point, long k) const
+    typedef std::multimap<double, MyNode*> NodeContainer;
+    typedef std::multimap<double, ContainerType> MapContainer;
+    std::vector<ContainerType> knn(const ContainerType& point, unsigned long k) const
     {
       std::vector<ContainerType> result;
 
@@ -91,15 +102,26 @@ namespace Search
         return result;
       }
 
-      std::multimap<double, MyNode*> nodes;
+      NodeContainer nodes;
       nodes.insert(std::make_pair(distance(point, root->middle), root.get()));
 
-      std::multimap<double, ContainerType> points;
+      MapContainer points;
       while (!nodes.empty())
       {
+        if(points.size() > k)
+        {
+          typename MapContainer::iterator it = points.begin();
+          std::advance(it, k);
+          points.erase(it, points.end());
+        }
+
         MyNode* current_node = nodes.begin()->second;
         nodes.erase(nodes.begin());
 
+        if (points.size() > k && test_distance_too_great(current_node, point, points.rbegin()->first))
+        {
+          continue;
+        }
         if(current_node->children.empty())
         {
           current_node->add_nodes(point, distance, nodes);
