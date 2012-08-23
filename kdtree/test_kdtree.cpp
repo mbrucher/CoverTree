@@ -86,7 +86,7 @@ int main(int argc, char** argv)
   Point minpoint;
   minpoint << -5.f, -5.f;
   Point maxpoint;
-  maxpoint << -5.f, -5.f;
+  maxpoint << 5.f, 5.f;
   tree.set_extent(minpoint, maxpoint);
 
   boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time();

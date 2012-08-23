@@ -48,7 +48,61 @@ namespace Search
 
     void add_point(const ContainerType& point)
     {
-      children.push_back(point);
+      if (left && right)
+      {
+        add_point_subnodes(point);
+      }
+      else
+      {
+        add_point_node(point);
+      }
+    }
+
+  protected:
+    int find_best_dimension() const
+    {
+      ContainerType furthest = (minpoint-maxpoint).cwiseAbs();
+
+      return std::max_element(&furthest[0], &furthest[0] + furthest.size()) - &furthest[0];
+    }
+
+    void add_point_node(const ContainerType& point)
+    {
+      if(children.size() > 10)
+      {
+        dimension = find_best_dimension();
+        left.reset(new Node);
+        left->minpoint = minpoint;
+        left->maxpoint = maxpoint;
+        left->maxpoint[dimension] = (left->maxpoint[dimension] + left->minpoint[dimension]) / 2;
+        left->middle = (left->minpoint + left->maxpoint) / 2;
+        right.reset(new Node);
+        right->minpoint = minpoint;
+        right->maxpoint = maxpoint;
+        right->minpoint[dimension] = (right->maxpoint[dimension] + right->minpoint[dimension]) / 2;
+        right->middle = (right->minpoint + right->maxpoint) / 2;
+        for(typename std::vector<ContainerType>::const_iterator it = children.begin(); it != children.end(); ++it)
+        {
+          add_point_subnodes(*it);
+        }
+        children.clear();
+      }
+      else
+      {
+        children.push_back(point);
+      }
+    }
+
+    void add_point_subnodes(const ContainerType& point)
+    {
+      if(point[dimension] < middle[dimension])
+      {
+        left->add_point(point);
+      }
+      else
+      {
+        right->add_point(point);
+      }
     }
   };
 
