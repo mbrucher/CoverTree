@@ -64,7 +64,7 @@ namespace Search
 
     bool test_distance_too_great(MyNode* node, const ContainerType& point, double max_dist) const
     {
-      return false;
+      return (max_dist - distance(node->middle, node->maxpoint) < distance(point, node->middle));
     }
 
   public:

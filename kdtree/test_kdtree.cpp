@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
   time = boost::posix_time::microsec_clock::local_time();
   PointContainer result2 = tree.knn(zero, KNNSIZE);
-  std::cout << "Out time (cover_tree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
+  std::cout << "Out time (kdtree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
 
   bool boolean = true;
   for(int i = 0; i < std::min(result.size(), result2.size()); ++i)
