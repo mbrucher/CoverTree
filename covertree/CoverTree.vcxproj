@@ -41,10 +41,10 @@
     <LibraryPath>D:\boost_1_51_0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\boost_1_46_0;$(IncludePath)</IncludePath>
+    <IncludePath>D:\boost_1_51_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>D:\boost_1_46_0\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\boost_1_51_0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

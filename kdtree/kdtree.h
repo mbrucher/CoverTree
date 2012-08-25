@@ -11,7 +11,7 @@
 
 namespace Search
 {
-  const long ChildrenLimit = 9;
+  const long ChildrenLimit = 20;
 
   template<class ContainerType>
   struct Node
@@ -165,7 +165,6 @@ namespace Search
       MapContainer points;
       while (!nodes.empty())
       {
-        std::cout << nodes.size() << std::endl;
         if(points.size() > k)
         {
           typename MapContainer::iterator it = points.begin();
