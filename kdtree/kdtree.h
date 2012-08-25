@@ -11,6 +11,8 @@
 
 namespace Search
 {
+  const long ChildrenLimit = 9;
+
   template<class ContainerType>
   struct Node
   {
@@ -68,7 +70,7 @@ namespace Search
 
     void add_point_node(const ContainerType& point)
     {
-      if(children.size() > 10)
+      if(children.size() >= ChildrenLimit)
       {
         dimension = find_best_dimension();
         left.reset(new Node);
@@ -86,6 +88,7 @@ namespace Search
           add_point_subnodes(*it);
         }
         children.clear();
+        add_point_subnodes(point);
       }
       else
       {
@@ -162,6 +165,7 @@ namespace Search
       MapContainer points;
       while (!nodes.empty())
       {
+        std::cout << nodes.size() << std::endl;
         if(points.size() > k)
         {
           typename MapContainer::iterator it = points.begin();

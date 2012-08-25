@@ -14,7 +14,7 @@
 #include "kdtree.h"
 
 const long POINTSIZE = 2;
-const long VECTORLENGTH = 100000;
+const long VECTORLENGTH = 10;
 const long KNNSIZE = 10;
 typedef Eigen::Vector2f Point;
 typedef std::vector<Point> PointContainer;
