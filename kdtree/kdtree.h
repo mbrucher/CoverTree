@@ -119,9 +119,10 @@ namespace Search
 
     boost::scoped_ptr<MyNode> root;
 
-    bool test_distance_too_great(MyNode* node, const ContainerType& point, double max_dist) const
+    template<class Distance2>
+    bool test_distance_too_great(MyNode* node, const ContainerType& point, double max_dist, const Distance2& new_distance) const
     {
-      return (max_dist - distance(node->middle, node->maxpoint) < distance(point, node->middle));
+      return (max_dist - new_distance(node->middle, node->maxpoint) < new_distance(point, node->middle));
     }
 
   public:
@@ -150,7 +151,9 @@ namespace Search
 
     typedef std::multimap<double, MyNode*> NodeContainer;
     typedef std::multimap<double, ContainerType> MapContainer;
-    std::vector<ContainerType> knn(const ContainerType& point, unsigned long k) const
+
+    template<class Distance2>
+    std::vector<ContainerType> knn(const ContainerType& point, unsigned long k, const Distance2& new_distance) const
     {
       std::vector<ContainerType> result;
 
@@ -160,7 +163,7 @@ namespace Search
       }
 
       NodeContainer nodes;
-      nodes.insert(std::make_pair(distance(point, root->middle), root.get()));
+      nodes.insert(std::make_pair(new_distance(point, root->middle), root.get()));
 
       MapContainer points;
       while (!nodes.empty())
@@ -175,17 +178,17 @@ namespace Search
         MyNode* current_node = nodes.begin()->second;
         nodes.erase(nodes.begin());
 
-        if (points.size() > k && test_distance_too_great(current_node, point, points.rbegin()->first))
+        if (points.size() > k && test_distance_too_great(current_node, point, points.rbegin()->first, new_distance))
         {
           continue;
         }
         if(current_node->children.empty())
         {
-          current_node->add_nodes(point, distance, nodes);
+          current_node->add_nodes(point, new_distance, nodes);
         }
         else
         {
-          current_node->add_children(point, distance, points);
+          current_node->add_children(point, new_distance, points);
         }
       }
 

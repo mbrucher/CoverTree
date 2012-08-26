@@ -29,6 +29,16 @@ float euclidian(const Point& p1, const Point& p2)
   return std::sqrt(dist);
 }
 
+float absolute(const Point& p1, const Point& p2)
+{
+  float dist = 0;
+  for(unsigned long i = 0; i < p1.size(); ++i)
+  {
+    dist += std::abs(p1[i] - p2[i]);
+  }
+  return dist;
+}
+
 PointContainer generate(long size)
 {
   PointContainer data;
@@ -50,12 +60,13 @@ PointContainer generate(long size)
   return data;
 }
 
-PointContainer knn(const PointContainer& container, const Point& data, int k)
+template<class Distance>
+PointContainer knn(const PointContainer& container, const Point& data, int k, const Distance& distance)
 {
   std::multimap<float, Point> point_map;
   for(PointContainer::const_iterator it = container.begin(); it != container.end(); ++it)
   {
-    point_map.insert(std::make_pair(euclidian(data, *it), *it));
+    point_map.insert(std::make_pair(distance(data, *it), *it));
   }
 
   PointContainer result;
@@ -76,6 +87,29 @@ std::ostream& operator<<(std::ostream& stream, const Point& data)
   }
   stream << std::endl;
   return stream;
+}
+
+template<class Point, class Data, class Tree, class Distance>
+void compare_searches(const Point& point, const Data& data, const Tree& tree, const Distance& distance)
+{
+  boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time();
+  PointContainer result = knn(data, point, KNNSIZE, distance);
+  std::cout << "Out time (linear) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
+
+  time = boost::posix_time::microsec_clock::local_time();
+  PointContainer result2 = tree.knn(point, KNNSIZE, distance);
+  std::cout << "Out time (kdtree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
+
+  bool boolean = true;
+  for(int i = 0; i < std::min(result.size(), result2.size()); ++i)
+  {
+    for(int j = 0; j < POINTSIZE; ++j)
+    {
+      boolean = boolean && (result[i][j] == result2[i][j]);
+    }
+    std::cout << i << std::endl << result[i] << result2[i];
+  }
+  std::cout << "Result " << (boolean && (result.size() == result2.size())) << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -100,23 +134,8 @@ int main(int argc, char** argv)
 //  tree.dump(stream);
 
   Point zero(2, 0.f);
-  time = boost::posix_time::microsec_clock::local_time();
-  PointContainer result = knn(data, zero, KNNSIZE);
-  std::cout << "Out time (linear) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
+  compare_searches(zero, data, tree, euclidian);
+  compare_searches(zero, data, tree, absolute);
 
-  time = boost::posix_time::microsec_clock::local_time();
-  PointContainer result2 = tree.knn(zero, KNNSIZE);
-  std::cout << "Out time (kdtree) " << (boost::posix_time::microsec_clock::local_time() - time) << std::endl;
-
-  bool boolean = true;
-  for(int i = 0; i < std::min(result.size(), result2.size()); ++i)
-  {
-    for(int j = 0; j < POINTSIZE; ++j)
-    {
-      boolean = boolean && (result[i][j] == result2[i][j]);
-    }
-    std::cout << i << std::endl << result[i] << result2[i];
-  }
-  std::cout << "Result " << (boolean && (result.size() == result2.size())) << std::endl;
   return EXIT_SUCCESS;
 }
